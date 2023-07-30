@@ -170,10 +170,6 @@ def train_model_by_mv(
     mutate_list = mutated_validation.get_mutated_label_list
     mutated_labels = torch.from_numpy(mutate_list).to(torch.float32)
 
-    # visualize  data mutation in a an extract of target space
-    # plot_data(data=input_data, labels=label, file_name='mnist')
-    # plot_data(data=input_data, labels=mutated_labels, file_name='mnist_mutated')
-
     train_ds_mutated = data.TensorDataset(input_data, mutated_labels)
     train_loader_mutated = DataLoader(train_ds_mutated, batch_size=256, num_workers=2)
 
