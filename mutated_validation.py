@@ -1,12 +1,14 @@
-"""Implementation of Mutation Validation for Supervised Learning"""
-
-# Author: Nana Abeka Otoo <abekaotoo@gmail.com>
-# License: MIT
+"""implementation of Mutation  Validation Score"""
 
 from enum import Enum
 from dataclasses import dataclass
 import random
-from sklearn.metrics import accuracy_score, precision_score, roc_auc_score, recall_score
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    roc_auc_score,
+    recall_score
+)
 from imblearn.metrics import geometric_mean_score
 import numpy as np
 
