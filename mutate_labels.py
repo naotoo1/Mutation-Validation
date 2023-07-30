@@ -1,8 +1,4 @@
-"""Implementation of Mutation Validation for Supervised Learning"""
-
-# Author: Nana Abeka Otoo <abekaotoo@gmail.com>
-# License: MIT
-
+"""implementation of Label Mutation Algorithm"""
 
 from collections import Counter
 from enum import Enum
