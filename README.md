@@ -1,5 +1,5 @@
 # Mutation-Validation for Learning Vector Quantization
-
+[Nana A. Otoo](https://github.com/naotoo1)
 
 
 In this paper is posited a new model validation scheme for LVQ (Learning Vector Quantization) models. This repository contains all the implementaions of the mutation validation algorithm and models that were used for the evaluation. 
