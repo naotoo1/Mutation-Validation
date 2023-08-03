@@ -11,4 +11,3 @@ _Mutation validation as a complement to existing applied machine learning valida
 ## About the models
 
 The details of the implementation and results evaluation can be found in the paper. The results of MV, CV and Holdout schemes for two artificially generated datasets and two real word data sets(WDBC and MNIST) against increasing LVQ model(s) complexity are presented in the paper. The target space perturbation algorithm presented in the paper is not only limited for use in LVQ's but can also be used for any supervised machinelearning/deep learning model. The mutation validation scheme presented in this paper can also be adopted in parallel to existing machine learning evaluation pipelines in runtime.  
-Privided below is a brief of the # of prototypes vs MV, CV and Holdout evaluation metric scores(accuracy). Higher scores mean good fit of the decision boundary of the model and vice-versa.
