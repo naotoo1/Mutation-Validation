@@ -42,7 +42,6 @@ class ValidationType(str, Enum):
     CROSSVALIDATION = "cv"
     MUTATEDVALIDATION = "mv"
     HOLDOUT = "ho"
-    MULTIPLE = "multi"
 
 
 class LVQ(str, Enum):
