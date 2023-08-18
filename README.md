@@ -7,6 +7,8 @@ In this paper is posited a new model validation scheme for LVQ (Learning Vector 
 ## Abstract
 _Mutation validation as a complement to existing applied machine learning validation schemes has been explored in recent times. Exploratory work for Learning vector quantization (LVQ) based on this model validation scheme remains to be discovered. This paper proposes mutation validation as an extension to existing cross-validation and holdout schemes for Generalized LVQ and its advanced variants. The mutation validation scheme provides a responsive, interpretable, intuitive and easily comprehensible score that complements existing validation schemes employed in the performance evaluation of the prototype-based LVQ family of classification algorithms. This paper establishes a relation between the mutation validation scheme and the goodness of fit evaluation for four LVQ models: Generalized LVQ, Generalized Matrix LVQ, Generalized Tangent LVQ and Robust Soft LVQ models. Numerical analysis regarding model complexity and effects on test outcomes, pitches mutation validation scheme above cross-validation and holdout schemes_.
 
+[https://vixra.org/abs/2308.0112](https://vixra.org/abs/2308.0112)
+
 
 ## About the models
 The implementation requires Python 3.10 and above. The author recommends to use a virtual environment or Docker image.
