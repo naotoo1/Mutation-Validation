@@ -1,5 +1,5 @@
 numpy==1.23.5
-scikit-learn==1.2.2
+scikit-learn==1.5.0
 imbalanced-learn==0.10.1
 torch==2.0.1
 torchmetrics==0.9.3
