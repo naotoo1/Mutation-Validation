@@ -1,0 +1,26 @@
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+# uv.lock
+Dockerfile 
+Dockerfile.cpu
+# Byte-compiled / optimized / DLL files
+__pycache__/
+private/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+requirements.in
+requirements-docker.in
+requirements-frozen-docker.txt
+uv.lock
