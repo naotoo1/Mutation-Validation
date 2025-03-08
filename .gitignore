@@ -8,7 +8,7 @@ devenv.local.nix
 # pre-commit
 .pre-commit-config.yaml
 
-# uv.lock
+uv.lock
 Dockerfile 
 Dockerfile.cpu
 # Byte-compiled / optimized / DLL files
@@ -23,4 +23,4 @@ private/
 requirements.in
 requirements-docker.in
 requirements-frozen-docker.txt
-uv.lock
+evaluation
