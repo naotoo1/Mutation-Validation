@@ -11,7 +11,7 @@ _Mutation validation as a complement to existing applied machine learning valida
 
 
 ## About the models
-The implementation requires Python 3.10 and above. The author recommends to use a virtual environment or Docker image. In  this regard, a fully reproducible development environment using Nix and [devenv](https://devenv.sh/getting-started/) is highly recommended. Once you have installed Nix and devenv, you can do the following:
+The implementation requires Python 3.10 and above. The author recommends to use a virtual environment or Docker image. In  this regard, a fully reproducible environment using Nix and [devenv](https://devenv.sh/getting-started/) is highly recommended. Once you have installed Nix and devenv, you can do the following:
 
    ```bash
    mkdir -p ~/.config/nix
@@ -32,7 +32,7 @@ devenv shell
    ```
 You may optionally consider using [direnv](https://direnv.net/) for automatic shell activation when entering the project directory.
 
-To install Mutation-Validation in development mode, follow these steps to set up your environment with all the necessary dependencies with live code editing capabilities. To use the local reproducible development environment, execute the following lock file commands:
+To install Mutation-Validation in a stable version, follow these steps to set up your environment with all the necessary dependencies with live code editing capabilities. To use the local reproducible environment, execute the following lock file commands:
 
 ```bash
 # Generate requirements file
