@@ -54,6 +54,7 @@ in {
       echo "Generating requirements.in without Nix packages..."
       cat > requirements.in << EOL
 # Non-Nix packages
+pytest
 imbalanced-learn
 prototorch
 prototorch_models
