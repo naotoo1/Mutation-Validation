@@ -1,0 +1,147 @@
+name: Build CPU Container and Run Training
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'devenv.nix'
+      - 'devenv.lock'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-cpu-container-and-train:
+    name: Build CPU Container and Execute Training
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Install Nix using the dedicated GitHub Action
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      
+      # Install devenv manually with Nix
+      - name: Install devenv
+        run: |
+          # Install devenv using nix command
+          nix profile install --accept-flake-config "github:cachix/devenv/latest"
+          # Check version
+          devenv --version
+      
+      # Generate requirements.in and lock files
+      - name: Generate requirements.in and lock files
+        run: |
+          # Use the generate-requirements script defined in devenv.nix
+          devenv shell -- generate-requirements
+          
+          # Update lock files using the script from devenv.nix
+          devenv shell -- update-lock-files
+          
+          # Show generated files
+          echo "=== Generated requirements.in ==="
+          cat requirements.in
+          
+          echo "=== Generated uv.lock ==="
+          cat uv.lock
+      
+      # Create package list for direct installation
+      - name: Create package list for direct installation
+        run: |
+          # Create a requirements-direct.txt file for direct pip installation
+          grep -v "^#" requirements.in | grep -v "^-e" | tr -d ' ' > requirements-direct.txt
+          
+          # Add prototorch_models explicitly if not already present
+          if ! grep -q "prototorch_models" requirements-direct.txt; then
+            echo "prototorch_models" >> requirements-direct.txt
+          fi
+          
+          echo "=== Created requirements-direct.txt for direct pip installation ==="
+          cat requirements-direct.txt
+      
+      # Create CPU container build script
+      - name: Create CPU container build script
+        run: |
+          cat > create-cpu-container.sh << 'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          # Create a Dockerfile
+          cat > Dockerfile.cpu << 'INNEREOF'
+          FROM python:3.12-slim
+          
+          # Set up working directory
+          WORKDIR /app
+          
+          # Copy requirements file
+          COPY requirements-direct.txt ./requirements.txt
+          
+          # Install packages directly with pip
+          RUN pip install --no-cache-dir -r requirements.txt
+          
+          # Copy the repository content
+          COPY . /app
+          
+          # Add the current directory to PYTHONPATH to make modules accessible
+          ENV PYTHONPATH=/app:$PYTHONPATH
+          
+          # Create entrypoint
+          ENTRYPOINT ["/bin/bash", "-c"]
+          CMD ["python"]
+          INNEREOF
+          
+          # Build the Docker image
+          echo "Building CPU container with fixed Dockerfile..."
+          docker build -t cpu-prototorch-env -f Dockerfile.cpu .
+          
+          echo "CPU container built successfully as cpu-prototorch-env"
+          EOF
+          
+          chmod +x create-cpu-container.sh
+      
+      # Build CPU Container
+      - name: Build CPU Container
+        run: |
+          echo "Building CPU container"
+          ./create-cpu-container.sh
+      
+      # Create training script
+      - name: Create training script
+        run: |
+          cat > run_training.sh << 'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          
+          # Create output directory for evaluated results
+          mkdir -p ./evaluated
+          
+          # Execute the train.py script
+          echo "Executing train.py"
+          docker run --rm -v "$(pwd):/app" -v "$(pwd)/evaluated:/app/evaluated" cpu-prototorch-env python /app/train.py
+          
+          # List the contents of the evaluated directory
+          echo "Contents of evaluated directory:"
+          ls -la ./evaluated
+          EOF
+          
+          chmod +x run_training.sh
+      
+      # Run training in container
+      - name: Run training in container
+        run: |
+          echo "Running training script in CPU container"
+          ./run_training.sh
+      
+      # Upload evaluated directory as artifact
+      - name: Upload evaluated results
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-results
+          path: ./evaluated/
+          retention-days: 7
