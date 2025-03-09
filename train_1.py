@@ -60,6 +60,8 @@ def evaluation_metric_logs(
     match log:
         case True:
             return logging.info("%s:%s", model_name, report)
+        case False:
+            print(f"{model_name} , {report}")
 
 
 kfold = StratifiedKFold(n_splits=5, random_state=4, shuffle=True)
@@ -136,7 +138,9 @@ def train_model_cv(
                     scoring_metric=EvaluationMetricsType.ACCURACY,
                 )
 
-    mean_scores.append(np.mean(metric_scores))
+    mean_scores.append(
+        round((float(np.mean(metric_scores))),4)
+    )
 
     return TrainModelSummary(mean_scores)
 
@@ -206,7 +210,7 @@ def train_model_by_mv(
                     mutated_training_predicted_labels=results[1],
                     evaluation_metric=EvaluationMetricsType.ACCURACY,
                 )
-                mv_score.append(mv_scorer.get_mv_score)
+                mv_score.append(round(mv_scorer.get_mv_score,4))
 
     return TrainModelSummary(mv_score)
 
@@ -346,6 +350,7 @@ class TM:
     optimal_search: str
     dynamic_proto_pruning: bool = False
     save_model: bool = False
+    log: bool =True
     summary_metric_list: list = field(default_factory=lambda: [])
 
     @property
@@ -392,10 +397,13 @@ class TM:
         self.summary_metric_list.append(
             self.train_mv.selected_model_evaluation_metrics_scores
         )
+
+        results = list(np.array(self.summary_metric_list).ravel())
         return evaluation_metric_logs(
-            self.summary_metric_list,
+            [f"HO: {results[0]}, CV: {results[1]}, MV: {results[2]}"],
             self.model_name,
             EvaluationMetricsType.ACCURACY.value,
+            self.log
         )
 
 
@@ -413,10 +421,11 @@ if __name__ == "__main__":
     seed_everything(seed=4)
     train_data = DATA(random=4)
     train = TM(
-        input_data=train_data.mnist.input_data,
+        input_data=train_data.mnist.input_data.float(),
         labels=train_data.mnist.labels,
         model_name=LVQ.GMLVQ,
         optimal_search=HyperParameterSearch.FALSE,
+        log=True
     )
 
     # train and evaluate using Holdout, CV and MV scheme
