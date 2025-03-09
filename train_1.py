@@ -413,7 +413,7 @@ if __name__ == "__main__":
     seed_everything(seed=4)
     train_data = DATA(random=4)
     train = TM(
-        input_data=train_data.mnist.input_data,
+        input_data=train_data.mnist.input_data.float(),
         labels=train_data.mnist.labels,
         model_name=LVQ.GMLVQ,
         optimal_search=HyperParameterSearch.FALSE,
