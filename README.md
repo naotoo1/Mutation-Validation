@@ -57,4 +57,15 @@ create-cpu-container
 run-cpu-container
    ```
 
+To replicate an example training for Mutation Validation of WDBC dataset for Learning Vector Quantization as used in this paper run:
+```python
+python3 train.py
+```
+
+To replicate an example training for Mutation Validation of MNIST dataset for Learning Vector Quantization as used in this paper run:
+
+```python
+python3 train_1.py
+```
+
 The details of the implementation and results evaluation can be found in the paper. The results of MV, CV and Holdout schemes for two artificially generated datasets and two real-word datasets (WDBC and MNIST) against increasing LVQ model(s) complexity are presented in the paper. The target space perturbation algorithm presented in the paper is not only limited for use in LVQs but can also be used for any supervised machine learning/deep learning model. The mutation validation scheme presented in this paper can also be adopted in parallel to existing machine learning evaluation pipelines in runtime.  
