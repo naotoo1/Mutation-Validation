@@ -1,0 +1,115 @@
+name: Test cross-platform reproducible builds
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'devenv.nix'
+      - 'devenv.lock'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-python-ubuntu:
+    name: Test Python 3.12 (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Install devenv
+        run: |
+          nix profile install --accept-flake-config "github:cachix/devenv/latest"
+          devenv --version
+
+      - name: Generate requirements and lock files
+        run: |
+          devenv shell -- generate-requirements
+          devenv shell -- update-lock-files
+          cat requirements.in
+          cat uv.lock
+
+      - name: Install pytest and dependencies
+        run: |
+          devenv shell -- uv pip install pytest
+
+      - name: List repository structure
+        run: |
+          ls -la
+          find . -name "*.py" | sort
+
+      - name: Modify PYTHONPATH for local modules
+        run: |
+          echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+          echo "export PYTHONPATH=$PWD" >> $HOME/.bashrc
+
+      - name: Debug Python import paths
+        run: |
+          devenv shell -- python -c "import sys; print('PYTHONPATH:', sys.path)"
+
+      - name: Run tests with devenv
+        run: |
+          devenv shell -- python --version
+          devenv shell -- uv --version
+          devenv shell -- install-from-lock
+          PYTHONPATH=$PWD devenv shell -- pytest tests/ -v
+
+  test-python-macos:
+    name: Test Python 3.12 (macOS)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Install devenv
+        run: |
+          nix profile install --accept-flake-config "github:cachix/devenv/latest"
+          devenv --version
+
+      - name: Generate requirements and lock files
+        run: |
+          devenv shell -- generate-requirements
+          devenv shell -- update-lock-files
+          cat requirements.in
+          cat uv.lock
+
+      - name: Install pytest and dependencies
+        run: |
+          devenv shell -- uv pip install pytest
+
+      - name: List repository structure
+        run: |
+          ls -la
+          find . -name "*.py" | sort
+
+      - name: Modify PYTHONPATH for local modules
+        run: |
+          echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+          echo "export PYTHONPATH=$PWD" >> $HOME/.zshrc
+
+      - name: Debug Python import paths
+        run: |
+          devenv shell -- python -c "import sys; print('PYTHONPATH:', sys.path)"
+
+      - name: Run tests with devenv
+        run: |
+          devenv shell -- python --version
+          devenv shell -- uv --version
+          devenv shell -- install-from-lock
+          PYTHONPATH=$PWD devenv shell -- pytest tests/ -v
