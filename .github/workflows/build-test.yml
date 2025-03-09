@@ -37,6 +37,10 @@ jobs:
           devenv shell -- update-lock-files
           cat requirements.in
           cat uv.lock
+      
+      - name: Install pytest
+        run: |
+          devenv shell -- uv pip install pytest
           
       - name: Run tests with devenv
         run: |
@@ -70,6 +74,10 @@ jobs:
           devenv shell -- update-lock-files
           cat requirements.in
           cat uv.lock
+      
+      - name: Install pytest
+        run: |
+          devenv shell -- uv pip install pytest
           
       - name: Run tests with devenv
         run: |
@@ -81,67 +89,55 @@ jobs:
   test-python-windows:
     name: Test Python 3.12 (Windows)
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Setup WSL
-        uses: Vampire/setup-wsl@v2
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
         with:
-          distribution: Ubuntu-22.04
-          wsl-shell-user: root
-          additional-packages: 
-            curl
-            xz-utils
-            build-essential
+          update: true
+          install: >-
             git
-            sudo
+            base-devel
+            mingw-w64-x86_64-toolchain
+            curl
+            xz
       
-      - name: Setup WSL Project Directory
+      - name: Install Nix
         run: |
-          wsl -d Ubuntu-22.04 -e bash -c "mkdir -p /github/workspace"
-          wsl -d Ubuntu-22.04 -e bash -c "cp -r ${{ github.workspace }}/* /github/workspace/ || true"
-        shell: cmd
-        
-      - name: Install Nix in WSL
-        run: |
-          wsl -d Ubuntu-22.04 -e bash -c "
-            sh <(curl -L https://nixos.org/nix/install) --daemon --yes
-            . /etc/profile.d/nix.sh
-            echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
-            systemctl restart nix-daemon || true
-          "
-        shell: cmd
+          curl -L https://nixos.org/nix/install | sh -s -- --no-daemon --yes
+          echo "source ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bashrc
+          source ~/.nix-profile/etc/profile.d/nix.sh
+          mkdir -p ~/.config/nix
+          echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
       
-      - name: Install devenv in WSL
+      - name: Install devenv
         run: |
-          wsl -d Ubuntu-22.04 -e bash -c "
-            . /etc/profile.d/nix.sh
-            nix profile install --accept-flake-config 'github:cachix/devenv/latest'
-            devenv --version
-          "
-        shell: cmd
+          source ~/.nix-profile/etc/profile.d/nix.sh
+          nix profile install --accept-flake-config "github:cachix/devenv/latest"
+          devenv --version
           
-      - name: Generate requirements and lock files in WSL
+      - name: Generate requirements and lock files
         run: |
-          wsl -d Ubuntu-22.04 -e bash -c "
-            . /etc/profile.d/nix.sh
-            cd /github/workspace
-            devenv shell -- generate-requirements
-            devenv shell -- update-lock-files
-            cat requirements.in
-            cat uv.lock
-          "
-        shell: cmd
+          source ~/.nix-profile/etc/profile.d/nix.sh
+          devenv shell -- generate-requirements
+          devenv shell -- update-lock-files
+          cat requirements.in
+          cat uv.lock
+      
+      - name: Install pytest
+        run: |
+          source ~/.nix-profile/etc/profile.d/nix.sh
+          devenv shell -- uv pip install pytest
           
-      - name: Run tests with devenv in WSL
+      - name: Run tests with devenv
         run: |
-          wsl -d Ubuntu-22.04 -e bash -c "
-            . /etc/profile.d/nix.sh
-            cd /github/workspace
-            devenv shell -- python --version
-            devenv shell -- uv --version
-            devenv shell -- install-from-lock
-            devenv shell -- pytest tests/
-          "
-        shell: cmd
+          source ~/.nix-profile/etc/profile.d/nix.sh
+          devenv shell -- python --version
+          devenv shell -- uv --version
+          devenv shell -- install-from-lock
+          devenv shell -- pytest tests/
