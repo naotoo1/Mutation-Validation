@@ -141,9 +141,6 @@ EOL
       # Install dependencies from frozen requirements
       RUN pip3 install --no-cache-dir -r requirements-frozen.txt
       
-      # Install the local package (not in editable mode)
-      RUN pip3 install --no-cache-dir -e .
-      
       # Set environment variables for PyTorch
       ENV PYTHONPATH=/usr/local/lib/python3/dist-packages
       
