@@ -118,16 +118,16 @@ jobs:
           #!/usr/bin/env bash
           set -euo pipefail
           
-          # Create output directory for evaluated results
-          mkdir -p ./evaluated
+          # Create output directory for evaluation results
+          mkdir -p ./evaluation
           
           # Execute the train.py script
           echo "Executing train.py with python3"
-          docker run --rm -v "$(pwd):/app" -v "$(pwd)/evaluated:/app/evaluated" cpu-prototorch-env python3 /app/train.py
+          docker run --rm -v "$(pwd):/app" -v "$(pwd)/evaluation:/app/evaluation" cpu-prototorch-env python3 /app/train.py
           
-          # List the contents of the evaluated directory
-          echo "Contents of evaluated directory:"
-          ls -la ./evaluated
+          # List the contents of the evaluation directory
+          echo "Contents of evaluation directory:"
+          ls -la ./evaluation
           EOF
           
           chmod +x run_training.sh
@@ -138,10 +138,10 @@ jobs:
           echo "Running training script in CPU container"
           ./run_training.sh
       
-      # Upload evaluated directory as artifact
-      - name: Upload evaluated results
+      # Upload evaluation directory as artifact
+      - name: Upload evaluation results
         uses: actions/upload-artifact@v4
         with:
           name: training-results
-          path: ./evaluated/
+          path: ./evaluation/
           retention-days: 7
