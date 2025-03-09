@@ -93,7 +93,7 @@ jobs:
           
           # Create entrypoint
           ENTRYPOINT ["/bin/bash", "-c"]
-          CMD ["python"]
+          CMD ["python3"]
           INNEREOF
           
           # Build the Docker image
@@ -122,8 +122,8 @@ jobs:
           mkdir -p ./evaluated
           
           # Execute the train.py script
-          echo "Executing train.py"
-          docker run --rm -v "$(pwd):/app" -v "$(pwd)/evaluated:/app/evaluated" cpu-prototorch-env python /app/train.py
+          echo "Executing train.py with python3"
+          docker run --rm -v "$(pwd):/app" -v "$(pwd)/evaluated:/app/evaluated" cpu-prototorch-env python3 /app/train.py
           
           # List the contents of the evaluated directory
           echo "Contents of evaluated directory:"
