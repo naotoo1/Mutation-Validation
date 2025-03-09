@@ -1,5 +1,11 @@
 """nafes validation scheme test suite"""
 
+import sys
+import os
+
+# Ensure the root directory is in sys.path
+sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+
 import numpy as np
 import mutated_validation
 import mutate_labels
