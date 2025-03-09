@@ -5,6 +5,9 @@ devenv.local.nix
 # direnv
 .direnv
 
+.vscode
+.pytest_cache
+
 # pre-commit
 .pre-commit-config.yaml
 
