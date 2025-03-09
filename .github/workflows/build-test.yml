@@ -7,6 +7,9 @@ on:
       - 'devenv.nix'
       - 'devenv.lock'
       - '.github/workflows/**'
+      - 'mutate_labels.py'
+      - 'mutated_validation.py'
+      - 'tests/test_mutation_validation.py'
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -86,58 +89,4 @@ jobs:
           devenv shell -- install-from-lock
           devenv shell -- pytest tests/
 
-  test-python-windows:
-    name: Test Python 3.12 (Windows)
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: >-
-            git
-            base-devel
-            mingw-w64-x86_64-toolchain
-            curl
-            xz
-      
-      - name: Install Nix
-        run: |
-          curl -L https://nixos.org/nix/install | sh -s -- --no-daemon --yes
-          echo "source ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bashrc
-          source ~/.nix-profile/etc/profile.d/nix.sh
-          mkdir -p ~/.config/nix
-          echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
-      
-      - name: Install devenv
-        run: |
-          source ~/.nix-profile/etc/profile.d/nix.sh
-          nix profile install --accept-flake-config "github:cachix/devenv/latest"
-          devenv --version
-          
-      - name: Generate requirements and lock files
-        run: |
-          source ~/.nix-profile/etc/profile.d/nix.sh
-          devenv shell -- generate-requirements
-          devenv shell -- update-lock-files
-          cat requirements.in
-          cat uv.lock
-      
-      - name: Install pytest
-        run: |
-          source ~/.nix-profile/etc/profile.d/nix.sh
-          devenv shell -- uv pip install pytest
-          
-      - name: Run tests with devenv
-        run: |
-          source ~/.nix-profile/etc/profile.d/nix.sh
-          devenv shell -- python --version
-          devenv shell -- uv --version
-          devenv shell -- install-from-lock
-          devenv shell -- pytest tests/
+  
